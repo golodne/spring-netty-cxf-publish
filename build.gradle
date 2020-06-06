@@ -1,0 +1,49 @@
+
+plugins {
+	id 'org.springframework.boot' version '2.3.0.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+group = 'ru.learn'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'org.apache.cxf:cxf-rt-transports-http-netty-server:3.3.2'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	//compile 'javax.servlet:servlet-api:3.0-alpha-1'
+
+	compile('org.apache.cxf:cxf-rt-frontend-jaxws:3.3.5')
+	compile('org.apache.cxf:cxf-rt-transports-http:3.3.5')
+
+	compile project(':genWSDLToClasses')
+
+	compile 'org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438'
+	compile 'com.sun.xml.ws:jaxws-rt:2.3.1'
+	compile 'com.sun.xml.ws:rt:2.3.1'
+
+
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'io.projectreactor:reactor-test'
+}
+
+test {
+	useJUnitPlatform()
+}

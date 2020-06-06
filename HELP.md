@@ -1,0 +1,1 @@
+endpoint http://localhost:8091/soap-api/service/books?wsdl

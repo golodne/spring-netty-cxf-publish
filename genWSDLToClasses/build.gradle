@@ -1,0 +1,85 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+}
+
+plugins {
+	id 'java'
+	id 'maven'
+}
+
+apply plugin: 'java'
+
+group = 'ru.neoflex.vtb'
+version = '0.0.2'
+sourceCompatibility = 11
+
+configurations {
+	wsdl2java
+}
+
+repositories {
+	mavenCentral()
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs += "$buildDir/generated/"
+		}
+	}
+}
+
+task generateWsdlToJava(type: JavaExec) {
+	main = "org.apache.cxf.tools.wsdlto.WSDLToJava"
+	classpath = configurations.wsdl2java
+	args = [
+			"-d", "${buildDir}/generated/",
+			"-encoding", 'UTF-8',
+		//	"-compile",
+			"-classdir", "${buildDir}/classes/java/main",
+			"-b", "$projectDir/src/main/resources/countries.xsd",
+			"-b", "$projectDir/src/main/resources/element_binding.xml",
+			"-b", "$projectDir/src/main/resources/wrapper_binding.xml", "$projectDir/src/main/resources/stock.wsdl"
+	]
+}
+
+compileJava.dependsOn generateWsdlToJava
+
+dependencies {
+	compile 'javax.xml.bind:jaxb-api:2.3.0'
+	compile 'javax.xml.ws:jaxws-api:2.3.0'
+	compile 'javax.jws:jsr181-api:1.0-MR1'
+	compile 'javax.xml.bind:jaxb-api:2.3.0'
+	compile 'javax.activation:javax.activation-api:1.2.0'
+	compile 'javax.annotation:javax.annotation-api:1.3'
+
+	wsdl2java 'com.sun.xml.bind:jaxb-ri:2.3.0'
+	wsdl2java 'com.sun.xml.bind:jaxb-xjc:2.3.0'
+	wsdl2java 'com.sun.xml.bind:jaxb-core:2.3.0'
+	wsdl2java 'com.sun.xml.bind:jaxb-impl:2.3.0'
+
+	wsdl2java 'javax.activation:javax.activation-api:1.2.0'
+	wsdl2java 'javax.annotation:javax.annotation-api:1.3'
+	wsdl2java 'javax.xml.ws:jaxws-api:2.3.0'
+	wsdl2java 'javax.jws:jsr181-api:1.0-MR1'
+
+	wsdl2java 'org.apache.cxf:cxf-tools-wsdlto-core:3.2.2'
+	wsdl2java 'org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws:3.2.2'
+	wsdl2java 'org.apache.cxf:cxf-tools-wsdlto-databinding-jaxb:3.2.2'
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+
+			repository(url: System.getenv("nexusUrl")+System.getenv("repositoryUri")) {
+				authentication(userName: System.getenv("user"), password: System.getenv("password"))
+			}
+			snapshotRepository(url: System.getenv("nexusUrl")+System.getenv("snapshotRepositoryUri")) {
+				authentication(userName: System.getenv("user"), password: System.getenv("password"))
+			}
+		}
+	}
+}
